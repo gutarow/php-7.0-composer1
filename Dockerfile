@@ -65,6 +65,27 @@ RUN echo "xdebug.remote_autostart=1" >> /usr/local/etc/php/php.ini
 RUN echo "xdebug.remote_host=172.18.0.1" >> /usr/local/etc/php/php.ini
 RUN echo "extension=oci8.so" >> /usr/local/etc/php/php.ini
 
+RUN { \
+  echo "<VirtualHost *:80>"; \
+  echo "  DocumentRoot /var/www/html/web"; \
+  echo "  LogLevel warn"; \
+  echo "  ErrorLog /var/log/apache2/error.log"; \
+  echo "  CustomLog /var/log/apache2/access.log combined"; \
+  echo "  ServerSignature Off"; \
+  echo "  <Directory /var/www/html>"; \
+  echo "    Options +FollowSymLinks"; \
+  echo "    Options -ExecCGI -Includes -Indexes"; \
+  echo "    AllowOverride all"; \
+  echo; \
+  echo "    Require all granted"; \
+  echo "  </Directory>"; \
+  echo "  <LocationMatch assets/>"; \
+  echo "    php_flag engine off"; \
+  echo "  </LocationMatch>"; \
+  echo; \
+  echo "  IncludeOptional sites-available/000-default.local*"; \
+  echo "</VirtualHost>"; \
+  } | tee /etc/apache2/sites-available/000-default.conf
 
 
 
